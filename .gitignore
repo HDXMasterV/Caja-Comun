@@ -1,0 +1,15 @@
+# Nunca subir datos financieros reales
+*.csv
+*.xlsx
+*.xls
+*.ods
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.heic
+respaldos/
+estados/
+
+# Configuración local de Claude Code
+.claude/settings.local.json

@@ -1,0 +1,43 @@
+<title>Caja Común</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="css/app.css">
+
+<header class="top">
+  <div class="wrap">
+    <div class="top-row">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-ink)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M8 7V5.5A1.5 1.5 0 0 1 9.5 4h5A1.5 1.5 0 0 1 16 5.5V7"/><path d="M3 12h18"/><circle cx="12" cy="12" r="1.6" fill="var(--accent-ink)"/></svg></div>
+        <div><h1>Caja Común</h1><small id="who">Finanzas del hogar</small></div>
+      </div>
+      <div class="month" id="monthbox">
+        <button type="button" data-act="mes" data-d="-1" aria-label="Mes anterior">‹</button>
+        <span id="mlabel"></span>
+        <button type="button" data-act="mes" data-d="1" aria-label="Mes siguiente">›</button>
+      </div>
+    </div>
+    <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+  </div>
+</header>
+<main class="wrap" id="view" aria-live="polite"></main>
+<button class="fab" type="button" data-act="nuevo" id="fab"><span aria-hidden="true">+</span> Anotar</button>
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mtitle" id="sheet"></div></div>
+<div id="toast" hidden></div>
+<div id="tip" hidden></div>
+
+
+<script src="js/01-base.js"></script>
+<script src="js/02-calculos.js"></script>
+<script src="js/03-ui.js"></script>
+<script src="js/04-anotar.js"></script>
+<script src="js/05-graficos.js"></script>
+<script src="js/06-vistas-inicio.js"></script>
+<script src="js/07-vistas-tarjetas.js"></script>
+<script src="js/08-vistas-plan.js"></script>
+<script src="js/09-vistas-ajustes.js"></script>
+<script src="js/10-render-eventos.js"></script>
+<script src="js/11-importar.js"></script>
+<script src="js/12-claude.js"></script>
+<script src="js/13-arranque.js"></script>
