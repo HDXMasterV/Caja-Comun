@@ -66,6 +66,13 @@ Para que las mejoras no rompan lo que ya funciona, sobre todo trabajando en la o
 
 ---
 
+## Rediseño visual (acordado 2026-11-25, pendiente de aplicar)
+
+- Computador: menú lateral oscuro con "Anotar" arriba; secciones Panel, Gastos, Tarjetas, Plan (presupuesto, fijos, deudas, metas), Entre nosotros, Asesor, Ajustes. Celular: barra inferior de 5 con "+" al centro.
+- Inicio como panel tipo Power BI: filtros (mes, persona, tarjeta), 4 indicadores (pueden gastar hoy, gastado vs mes anterior, ingresos, % ahorro), barras ingresos/gastos por mes, dona por categoría, gasto por persona, tarjetas y top comercios.
+- Paleta elegida: **Grafito y ámbar** (gris oscuro #2C2C2A/#444441, ámbar #BA7517/#EF9F27, resalte #FAEEDA/#633806), con modo oscuro.
+- Descartado: gráfico de gasto acumulado vs presupuesto.
+
 ## Descartado por ahora
 
 - **Leer avisos del banco por correo:** los avisos de la tarjeta adicional le llegan a la titular. Se puede retomar si ella reenvía solo esos avisos con un filtro.
