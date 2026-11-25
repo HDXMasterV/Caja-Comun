@@ -49,7 +49,7 @@ tipo es "gasto" o "ingreso". Si no se entiende el monto, usa 0.`, {modelTier: 'q
   return arr.filter(x => x && typeof x === 'object').map(x => ({monto: parseMonto(x.monto), desc: String(x.descripcion || '').slice(0, 80), cat: valid.has(x.categoria) ? x.categoria : null, cuenta: mnames.has(x.medio) ? x.medio : '', fecha: parseDateAny(x.fecha) || todayISO(), tipo: x.tipo === 'ingreso' ? 'ingreso' : 'gasto', quien: mem.has(x.quien) ? x.quien : '', cuotas: Number(x.cuotas) > 1 ? Number(x.cuotas) : null}));
 }
 let sampleReady; const sampleWait = new Promise(r => { sampleReady = r; });
-function quickAdd(initial) {
+function quickAdd(initial, opts = {}) {
   const Q = {items: [], busy: false};
   const me = yo();
   const lastCard = lsGet('cc-medio') || '';
@@ -59,7 +59,7 @@ function quickAdd(initial) {
     if (it.cuotas) cat = cat || 'otros';
     const cuenta = it.cuenta || (tipo === 'gasto' ? lastCard : '');
     const dueno = (medioByName(cuenta) || {}).usa;
-    return {monto: it.monto || 0, desc: it.desc || '', cat, cuenta, fecha: it.fecha || todayISO(), tipo, quien: it.quien || (dueno && personaOf(dueno) ? dueno : me), comp: tipo === 'gasto' ? cfg().compDefault : false, cuotas: it.cuotas || null};
+    return {monto: it.monto || 0, desc: it.desc || '', cat, cuenta, fecha: it.fecha || todayISO(), tipo, quien: it.quien || opts.quien || (dueno && personaOf(dueno) ? dueno : me), comp: tipo === 'gasto' ? cfg().compDefault : false, cuotas: it.cuotas || null};
   };
   openModal('Anotar rápido', `
     <form id="qa-f" style="display:grid;gap:10px" autocomplete="off">
@@ -139,7 +139,7 @@ function quickAdd(initial) {
       closeModal();
       toast(items.length > 1 ? `${items.length} movimientos guardados` : `Guardado: ${fmt(items[0].monto)} ${items[0].desc}`, {l:'Deshacer', fn: async () => { await w(async () => { for (const p of ids) await S.db.doc(p).delete(); }, 'Deshecho'); }});
     }
-    if (initial) interpret(); else setTimeout(() => inp.focus(), 60);
+    if (initial && !opts.prefill) interpret(); else setTimeout(() => { inp.focus(); try { inp.setSelectionRange(inp.value.length, inp.value.length); } catch (e) {} }, 60);
   });
 }
 

@@ -32,13 +32,22 @@ function pendientes(ym) {
   return out.sort((a, b) => a.dia - b.dia);
 }
 const presTotal = () => sum(catsOf('gasto').filter(c => c.id !== 'ahorro').map(c => Number(c.p) || 0));
+// Último día hábil (lunes a viernes) del mes; no considera feriados.
+function lastBizDay(ym) { let d = daysInMonth(ym); while ([0, 6].includes(new Date(`${ym}-${pad(d)}T12:00`).getDay())) d--; return `${ym}-${pad(d)}`; }
+// Sueldos que financian el mes ym: desde el último día hábil del mes anterior hasta el día antes del último día hábil de ym.
+function sueldosPeriodo(ym) {
+  const desde = lastBizDay(addMonths(ym, -1)), hasta = lastBizDay(ym);
+  return S.movs.filter(m => m.tipo === 'ingreso' && m.cat === 'sueldo' && m.fecha >= desde && m.fecha < hasta);
+}
 function disponible() {
   const ym = curYM(), s = st(ym), pend = pendientes(ym).filter(p => !p.paid);
   const pendM = sum(pend.map(p => p.monto));
   const pres = presTotal();
   const dl = daysInMonth(ym) - Number(todayISO().slice(8)) + 1;
   const ingFijo = sum(S.recs.filter(r => r.tipo === 'ingreso' && recOccurs(r, ym)).map(r => r.monto));
-  const ingRef = Math.max(s.ing, Number(cfg().ingresoMensual) || 0, ingFijo);
+  // El sueldo llega el último día hábil y se usa el mes siguiente: se cuenta por "período de sueldo", no por mes calendario.
+  const ingPeriodo = sum(s.ms.filter(m => m.tipo === 'ingreso' && m.cat !== 'sueldo').map(m => m.monto)) + sum(sueldosPeriodo(ym).map(m => m.monto));
+  const ingRef = Math.max(ingPeriodo, Number(cfg().ingresoMensual) || 0, ingFijo);
   let base, modo;
   if (pres > 0) { base = pres - s.gas - pendM; modo = 'pres'; }
   else { base = ingRef - s.gas - s.aho - pendM - (Number(cfg().ahorroMensual) || 0); modo = 'ing'; }
@@ -137,6 +146,14 @@ function cardInfo(c) {
 }
 function alertas() {
   const out = []; const cur = curYM(); const today = todayISO(); const s = st(cur);
+  const diaSueldo = today >= lastBizDay(cur) ? lastBizDay(cur) : lastBizDay(addMonths(cur, -1));
+  if (daysBetween(diaSueldo, today) <= 5) {
+    const gente = personas().length ? personas() : [{id: yo(), n: 'tu'}];
+    for (const p of gente) {
+      const ya = S.movs.some(m => m.tipo === 'ingreso' && m.cat === 'sueldo' && m.quien === p.id && m.fecha >= addDays(diaSueldo, -3));
+      if (!ya) out.push({sev:'info', t:`Día de sueldo: falta anotar el de ${p.n}`, d:`El sueldo llega el último día hábil (${dShort(diaSueldo)}) y se usa para el mes siguiente. Anótalo apenas llegue.`, act:{l:'Anotar sueldo', a:'qa-sueldo', v:p.id}, w:0});
+    }
+  }
   for (const c of cfg().medios) {
     const i = cardInfo(c); if (!i.cy || !i.cy.venc || i.pagada || i.facturado <= 0) continue;
     const dd = daysBetween(today, i.cy.venc), quien = c.adicional ? `pagarle a ${c.titular || 'la titular'}` : 'pagar';

@@ -106,6 +106,7 @@ const ACT = {
   'ver-medio': el => { S.f = {q:'', cat:'', quien:'', tipo:'', cuenta: el.dataset.v}; location.hash = 'movimientos'; },
   copiar: async el => { const t = el.dataset.v; try { await navigator.clipboard.writeText(t); toast('Copiado'); } catch (e) { const i = el.parentElement.querySelector('input'); if (i) { i.focus(); i.select(); } toast('Selecciona el texto y cópialo'); } },
   'qa-open': () => quickAdd(''),
+  'qa-sueldo': el => quickAdd('me pagaron el sueldo ', {prefill: true, quien: el.dataset.v}),
 };
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el) return;
