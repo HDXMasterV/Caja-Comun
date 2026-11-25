@@ -3,6 +3,9 @@
 App web de finanzas del hogar (dos personas, Chile, pesos CLP) publicada como Artifact de claude.ai:
 **https://claude.ai/artifact/5jmt1fk1VGtxwUiL2fvmsk**. Siempre publicar sobre esa URL: los atajos del iPhone apuntan a ella.
 
+## Plan
+El orden de trabajo y lo pendiente están en `PLAN.md`. Al empezar una sesión, revisar en qué fase vamos; al terminar, marcar lo hecho.
+
 ## Reglas
 - Responder y escribir la interfaz en español de Chile. Montos con formato `$12.990`.
 - Los datos reales viven en la base de datos del artifact (capacidad `db`), nunca en este repositorio. No agregar estados de cuenta, cartolas, respaldos CSV ni capturas al repo (ver `.gitignore`).
