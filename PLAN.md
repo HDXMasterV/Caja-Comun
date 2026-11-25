@@ -75,6 +75,13 @@ Para que las mejoras no rompan lo que ya funciona, sobre todo trabajando en la o
 - [x] Movimientos: lista sin totales por día, ícono de color por categoría y panel de detalle (cambiar categoría, persona y reparto ahí mismo; presupuesto de la categoría; historial del comercio en 6 meses). En celular y pantallas angostas, tocar un movimiento abre el editor.
 - [ ] Revisarlo con datos reales en claude.ai y en los iPhone.
 
+## Correcciones pedidas después del rediseño (2026-11-25)
+
+- [ ] **Cuotas que vienen en meses futuros.** Al avanzar a diciembre (o a cualquier mes siguiente) deben aparecer las cuotas pendientes de ese mes: las de compras en cuotas de los estados de cuenta (ej. "cuota 3/6" → la 4/6 cae en el mes siguiente) y las de Deudas y cuotas, como pagos por venir en el Panel y en Movimientos.
+- [ ] **Sin división de gastos.** Victor y Carol funcionan como una sola cuenta: quitar "Entre nosotros" (quién le debe a quién), la marca "compartido", el reparto y el filtro "Compartidos". Mantener solo quién hizo cada gasto, como dato informativo.
+- [ ] **Tipografía al estilo Binance.** Binance usa su fuente propia (BinancePlex), que no se puede copiar a la app; la alternativa libre es **IBM Plex Sans**, en la que se basa, con números tabulares. Revisar también cómo muestran los símbolos (+/−, %, $) y los colores de subida/bajada.
+- [ ] **Gráficos al estilo Binance.** Usan gráficos de TradingView; la versión libre es **Lightweight Charts** (licencia Apache 2.0), que se puede cargar desde cdnjs. Evaluar usarla para la evolución de ingresos y gastos (línea o área con cursor y tooltip) en vez de los gráficos SVG hechos a mano.
+
 - Computador: menú lateral oscuro con "Anotar" arriba; secciones Panel, Gastos, Tarjetas, Plan (presupuesto, fijos, deudas, metas), Entre nosotros, Asesor, Ajustes. Celular: barra inferior de 5 con "+" al centro.
 - Inicio como panel tipo Power BI: filtros (mes, persona, tarjeta), 4 indicadores (pueden gastar hoy, gastado vs mes anterior, ingresos, % ahorro), barras ingresos/gastos por mes, dona por categoría, gasto por persona, tarjetas y top comercios.
 - Paleta elegida: **Grafito y ámbar** (gris oscuro #2C2C2A/#444441, ámbar #BA7517/#EF9F27, resalte #FAEEDA/#633806), con modo oscuro.
