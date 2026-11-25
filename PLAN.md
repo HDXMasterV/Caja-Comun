@@ -9,13 +9,15 @@ Marcar con `[x]` lo terminado y subir el cambio a GitHub al cerrar cada sesión.
 
 Hasta ahora la app solo se probó en el computador con datos simulados. Antes de agregar cosas hay que usarla con datos reales y corregir lo que falle en claude.ai y en los iPhone.
 
-- [ ] Abrir la app en claude.ai, aceptar los permisos (Claude, dictado, descargas) y revisar que cargue sin errores.
-- [ ] Borrar los datos de ejemplo.
-- [ ] Registrar las tarjetas y cuentas reales en **Tarjetas** (la adicional con su titular, cierre, pago y cupo).
-- [ ] Cargar los pagos fijos reales (arriendo, cuentas, suscripciones, sueldos).
-- [ ] Compartir la página con la pareja como **Colaborador** y confirmar que aparece en "Entre nosotros".
-- [ ] Armar el atajo "Anotar gasto" (`#anotar`) en los dos iPhone y probar el de voz (`#g-…`).
-- [ ] Importar una cartola real y un estado de cuenta real, y revisar categorías y duplicados.
+- [x] Abrir la app en claude.ai, aceptar los permisos (Claude, dictado, descargas) y revisar que cargue sin errores.
+- [x] Borrar los datos de ejemplo.
+- [x] Registrar las tarjetas y cuentas reales en **Tarjetas** (la adicional con su titular, cierre, pago y cupo).
+- [x] Cargar los pagos fijos reales: arriendo (incluye cuentas básicas, solo Victor) y suscripciones de Banco Ripley Carito. Los sueldos son variables y se anotan el último día hábil (hay aviso).
+- [x] ~~Compartir la página con la pareja~~: Victor y Carol usan la misma cuenta de Claude; cada dispositivo elige "Soy Victor / Soy Carol".
+- [ ] Carol abre la app en su iPhone, elige "Soy Carol" y arma sus atajos.
+- [x] iPhone de Victor: atajo de voz "Gasto" (`#g-…`) funcionando (2026-11-25).
+- [ ] iPhone de Victor: atajo "Anotar gasto" (`#anotar`).
+- [x] Importar un estado de cuenta real (Banco Ripley, 111 movimientos) y revisar categorías y duplicados.
 - [ ] Anotar todo lo que falle o moleste en la lista de "Problemas encontrados" de abajo.
 
 **Listo cuando:** los dos pueden anotar desde el iPhone y una semana de gastos reales queda bien registrada.
