@@ -5,6 +5,7 @@ function scheduleRender() { if (rq) return; rq = true; requestAnimationFrame(() 
 function render() {
   const ae = document.activeElement;
   const v = $('#view');
+  $('#who').textContent = whoText();
   if (!$('#modal').hidden || (ae && v.contains(ae) && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && !ae.dataset.live)) { S.pendingRender = true; return; }
   S.pendingRender = false; S._st = {};
   const keep = ae && v.contains(ae) && ae.id ? {id: ae.id, s: ae.selectionStart, e: ae.selectionEnd} : null;
