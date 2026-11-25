@@ -13,6 +13,8 @@
     ],
     metas: [{id:'ej-emergencia', nombre:'Fondo de emergencia', objetivo:3000000, ahorrado:850000, limite:'2027-12', aportes:[{f:'2026-10-30', m:200000, q:'ej-b'}], ej:true}],
     movs: [
+      {id:'h1', fecha:'2024-12-20', monto:23990, tipo:'gasto', desc:'Unimarc (historial)', comercio:'Unimarc', cat:'super', quien:'ej-a', comp:true, ej:true},
+      {id:'h2', fecha:'2025-06-12', monto:7290, tipo:'gasto', desc:'Mercado Pago retiro (historial)', comercio:'Mercado Pago', cat:'otros', quien:'ej-b', comp:true, ej:true},
       {id:'a1', fecha:'2026-10-05', monto:520000, tipo:'gasto', desc:'Arriendo', cat:'vivienda', quien:'ej-a', comp:true, ref:'r:ej-arriendo:2026-10', ej:true},
       {id:'a2', fecha:'2026-10-30', monto:1450000, tipo:'ingreso', desc:'Sueldo A', cat:'sueldo', quien:'ej-a', ref:'r:ej-sueldo-a:2026-10', ej:true},
       {id:'a3', fecha:'2026-10-15', monto:4290, tipo:'gasto', desc:'YouTube Premium', comercio:'YouTube Premium', cat:'suscripciones', quien:'ej-a', ej:true},

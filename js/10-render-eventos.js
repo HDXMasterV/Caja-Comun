@@ -10,7 +10,7 @@ function render() {
   S.pendingRender = false; S._st = {};
   const keep = ae && v.contains(ae) && ae.id ? {id: ae.id, s: ae.selectionStart, e: ae.selectionEnd} : null;
   const chatScroll = $('#chat') ? $('#chat').scrollTop : null;
-  $('#tabs').innerHTML = VIEWS.map(([k, l]) => `<a href="#${k}"${k === S.view ? ' aria-current="page"' : ''}>${l}</a>`).join('');
+  renderNav();
   $('#mlabel').textContent = ymLabel(S.ym);
   $('#who').textContent = whoText();
   $('#monthbox').style.visibility = MONTH_VIEWS.has(S.view) ? 'visible' : 'hidden';
@@ -21,6 +21,20 @@ function render() {
   const ch = $('#chat'); if (ch) ch.scrollTop = S.chatStick || chatScroll == null ? ch.scrollHeight : chatScroll;
   mountView();
   refreshNames();
+}
+const NAV = [[null, ['inicio', 'movimientos', 'tarjetas', 'importar']], ['Plan', ['presupuesto', 'fijos', 'deudas', 'metas']], ['Hogar', ['entre-nosotros', 'asesor', 'ajustes']]];
+const VIEW_ICON = {inicio:'panel', movimientos:'lista', tarjetas:'tarjeta', importar:'subir', presupuesto:'torta', fijos:'repetir', deudas:'boleta', metas:'meta', 'entre-nosotros':'personas', asesor:'chispa', ajustes:'ajustes'};
+const BNAV_MAIN = new Set(['inicio', 'movimientos', 'tarjetas']);
+const viewLabel = k => (VIEWS.find(v => v[0] === k) || [k, k])[1];
+const navLink = k => `<a href="#${k}"${k === S.view ? ' aria-current="page"' : ''}>${ico(VIEW_ICON[k])}<span>${esc(viewLabel(k))}</span></a>`;
+function renderNav() {
+  $('#nav').innerHTML = NAV.map(([g, ks]) => (g ? `<div class="grp">${g}</div>` : '') + ks.map(navLink).join('')).join('');
+  $('#bnav').innerHTML = navLink('inicio') + navLink('movimientos') + `<button type="button" class="plus" data-act="nuevo" aria-label="Anotar">${ico('mas')}</button>` + navLink('tarjetas') + `<button type="button" data-act="mas-menu"${BNAV_MAIN.has(S.view) ? '' : ' aria-current="page"'}>${ico('puntos')}<span>Más</span></button>`;
+  $('#ptitle').textContent = S.view === 'inicio' ? 'Panel' : viewLabel(S.view);
+  document.title = `${S.view === 'inicio' ? 'Panel' : viewLabel(S.view)} · Caja Común`;
+}
+function masMenu() {
+  openModal('Más secciones', `<nav class="more-list">${VIEWS.map(v => v[0]).filter(k => !BNAV_MAIN.has(k)).map(navLink).join('')}</nav>`, sh => { $('.more-list', sh).addEventListener('click', e => { if (e.target.closest('a')) closeModal(); }); });
 }
 function mountView() {
   if (S.view === 'importar') {
@@ -58,8 +72,26 @@ window.addEventListener('hashchange', route);
 document.addEventListener('focusout', () => setTimeout(() => { if (S.pendingRender && $('#modal').hidden) render(); }, 0));
 
 /* ---------- eventos ---------- */
+function mesPicker(y) {
+  const cur = curYM(), cy = Number(cur.slice(0, 4));
+  const conDatos = new Set(S.movs.map(m => m.fecha.slice(0, 7)));
+  const y0 = Math.min(cy, ...[...conDatos].map(k => Number(k.slice(0, 4))).filter(Number.isFinite));
+  const anos = []; for (let a = cy; a >= y0; a--) anos.push(a);
+  openModal('Elegir mes', `<div id="mp">
+    <div class="seg" role="group" aria-label="Año" style="flex-wrap:wrap">${anos.map(a => `<button type="button" data-y="${a}" aria-pressed="${a === y}">${a}</button>`).join('')}</div>
+    <div class="mgrid">${MESES.map((n, i) => { const ym = `${y}-${pad(i + 1)}`; return `<button type="button" class="mcell${ym === S.ym ? ' on' : ''}${conDatos.has(ym) ? ' has' : ''}" data-ym="${ym}"${ym > cur ? ' disabled' : ''} aria-label="${esc(ymLabel(ym))}${conDatos.has(ym) ? ', con movimientos' : ''}">${n.slice(0, 3)}</button>`; }).join('')}</div>
+    <div class="row"><span class="hint sp">El punto marca los meses con movimientos.</span>${S.ym !== cur ? `<button class="btn sm" type="button" data-ym="${cur}">Ir a ${esc(ymLabel(cur))}</button>` : ''}</div>
+  </div>`, sh => {
+    $('#mp', sh).addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b || b.disabled) return;
+      if (b.dataset.y) mesPicker(Number(b.dataset.y));
+      else if (b.dataset.ym) { S.ym = b.dataset.ym; S.analisis = ''; closeModal(); render(); }
+    });
+  });
+}
 const ACT = {
   mes: el => { S.ym = addMonths(S.ym, Number(el.dataset.d)); S.analisis = ''; render(); },
+  'elegir-mes': () => mesPicker(Number(S.ym.slice(0, 4))),
   nuevo: () => quickAdd(''),
   cerrar: () => closeModal(),
   editar: el => { const m = S.movs.find(x => x.id === el.dataset.v); if (m) movForm(m); },
@@ -106,6 +138,20 @@ const ACT = {
   cuadrar: el => { const c = cfg().medios.find(m => m.id === el.dataset.v); if (!c) return; S.imp.cuenta = c.n; S.imp.cuadra = true; location.hash = 'importar'; toast(`Sube el estado de cuenta o cartola de ${c.n}`); },
   'ver-medio': el => { S.f = {q:'', cat:'', quien:'', tipo:'', cuenta: el.dataset.v}; location.hash = 'movimientos'; },
   copiar: async el => { const t = el.dataset.v; try { await navigator.clipboard.writeText(t); toast('Copiado'); } catch (e) { const i = el.parentElement.querySelector('input'); if (i) { i.focus(); i.select(); } toast('Selecciona el texto y cópialo'); } },
+  'mas-menu': () => masMenu(),
+  pf: el => { S.pf.quien = el.dataset.v; render(); },
+  fq: el => { S.f.quien = el.dataset.v; render(); },
+  'sel-mov': el => {
+    const m = S.movs.find(x => x.id === el.dataset.v); if (!m) return;
+    if (window.matchMedia('(max-width:1099px)').matches) { movForm(m); return; }
+    S.sel = m.id; render();
+  },
+  'editar-sel': () => { const m = S.movs.find(x => x.id === S.sel); if (m) movForm(m); },
+  'borrar-sel': async el => {
+    if (el.dataset.c !== '1') { el.dataset.c = '1'; el.textContent = 'Toca otra vez para borrar'; return; }
+    const id = S.sel; if (await w(() => S.db.doc('movs/' + id).delete(), 'Movimiento borrado')) S.sel = '';
+  },
+  'ver-comercio': el => { S.f = {q: el.dataset.v, cat:'', quien:'', tipo:'', cuenta:''}; location.hash = 'movimientos'; },
   'qa-open': () => quickAdd(''),
   'qa-sueldo': el => quickAdd('me pagaron el sueldo ', {prefill: true, quien: el.dataset.v}),
 };
@@ -131,6 +177,15 @@ document.addEventListener('change', async e => {
   if (t.id === 'f-quien') { S.f.quien = t.value; t.blur(); render(); return; }
   if (t.id === 'f-tipo') { S.f.tipo = t.value; t.blur(); render(); return; }
   if (t.id === 'f-cuenta') { S.f.cuenta = t.value; t.blur(); render(); return; }
+  if (t.id === 'pf-cuenta') { S.pf.cuenta = t.value; t.blur(); render(); return; }
+  if (t.id === 'md-cat' || t.id === 'md-quien' || t.id === 'md-comp') {
+    const m = S.movs.find(x => x.id === S.sel); if (!m) return;
+    const patch = t.id === 'md-cat' ? {cat: t.value} : t.id === 'md-quien' ? {quien: t.value} : {comp: t.checked};
+    t.blur();
+    const ok = await w(() => S.db.doc('movs/' + m.id).update(patch), 'Cambio guardado');
+    if (ok && patch.cat && merchantKey(m.comercio || m.desc).length >= 3) toast('Categoría cambiada', {l: 'Recordar para parecidos', fn: () => learnRule(m.comercio || m.desc, patch.cat)});
+    return;
+  }
   if (t.id === 'imp-cuenta') { S.imp.cuenta = t.value; const du = (medioByName(t.value) || {}).usa; if (du && personaOf(du)) S.imp.quien = du; fixCuotaDates(); recheckDups(); S.imp.rows.sort((a, b) => b.fecha.localeCompare(a.fecha)); t.blur(); render(); return; }
   if (t.id === 'imp-quien') { S.imp.quien = t.value; return; }
   if (t.id === 'imp-comp') { S.imp.comp = t.checked; return; }

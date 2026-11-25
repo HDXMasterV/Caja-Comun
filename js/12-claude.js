@@ -57,7 +57,7 @@ async function sendChat(text) {
   const turns = [{role:'user', content: intro}, ...S.chat.slice(-12)];
   const tools = S.limits && S.limits.tools ? [{
     name: 'buscar_movimientos',
-    description: 'Busca movimientos del hogar de los últimos 12 meses por texto (comercio, descripción o categoría) y rango de fechas. Devuelve hasta 60 filas con fecha, descripción, categoría, tipo y monto, más el total.',
+    description: 'Busca movimientos del hogar de todo el historial (desde 2024) por texto (comercio, descripción o categoría) y rango de fechas. Devuelve hasta 60 filas con fecha, descripción, categoría, tipo y monto, más el total.',
     inputSchema: {type:'object', properties: {texto: {type:'string', description:'Texto a buscar; vacío para todos'}, desde: {type:'string', description:'AAAA-MM-DD'}, hasta: {type:'string', description:'AAAA-MM-DD'}}},
     execute: input => {
       const q = norm(String(input.texto || '')), de = String(input.desde || '0000'), ha = String(input.hasta || '9999');

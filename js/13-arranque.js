@@ -31,7 +31,7 @@ async function boot() {
   const onErr = e => { console.error(e); if (e && e.code === 'unavailable') toast('Se perdió la conexión con los datos. Recarga la página.'); };
   const done = k => { S.ready[k] = true; if (Object.values(S.ready).every(Boolean)) { clearTimeout(slowT); S.slow = false; } };
   db.doc('config/main').onSnapshot(snap => { S.config = snap.exists ? snap.data() : null; remap(); if (!snap.metadata.fromCache) done('cfg'); joinHousehold(); scheduleRender(); }, onErr);
-  db.collection('movs').where('fecha', '>=', addMonths(curYM(), -12) + '-01').onSnapshot(snap => {
+  db.collection('movs').onSnapshot(snap => {
     raw.movs = docsOf(snap).filter(m => m.fecha && Number.isFinite(m.monto)).sort((a, b) => b.fecha.localeCompare(a.fecha) || String(b.creado || '').localeCompare(String(a.creado || '')));
     remap();
     S.refs = new Set(S.movs.map(m => m.ref).filter(Boolean));

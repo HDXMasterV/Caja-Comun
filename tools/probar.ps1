@@ -26,7 +26,10 @@ try {
       if ($tipos.ContainsKey($ext)) { $c.Response.ContentType = $tipos[$ext] }
     }
     $c.Response.Headers.Add('Cache-Control', 'no-store')
-    $c.Response.OutputStream.Write($bytes, 0, $bytes.Length)
-    $c.Response.Close()
+    try {
+      $c.Response.ContentLength64 = $bytes.Length
+      if ($c.Request.HttpMethod -ne 'HEAD') { $c.Response.OutputStream.Write($bytes, 0, $bytes.Length) }
+      $c.Response.Close()
+    } catch { try { $c.Response.Abort() } catch {} }
   }
 } finally { $l.Stop() }

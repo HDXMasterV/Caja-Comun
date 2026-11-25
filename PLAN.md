@@ -18,6 +18,8 @@ Hasta ahora la app solo se probó en el computador con datos simulados. Antes de
 - [x] iPhone de Victor: atajo de voz "Gasto" (`#g-…`) funcionando (2026-11-25).
 - [ ] iPhone de Victor: atajo "Anotar gasto" (`#anotar`).
 - [x] Importar un estado de cuenta real (Banco Ripley, 111 movimientos) y revisar categorías y duplicados.
+- [x] Historial Banco Ripley Carito cargado (2026-11-25): 18 estados de cuenta de may-2024 a oct-2026, 1.649 movimientos con id `rip0001`…`rip1649` y `origen: "cartola"`, cuadrados con los subtotales del banco. Lector: `estados/leer_ripley.py` (fuera del repo). Faltan los estados de jun–nov 2024 y feb–jul 2026. Se agregó de vuelta la categoría Transporte.
+- [x] Cargos Mercado Pago a Carol y Victor ("MERPAGO*CAROLGABRIEL", "MERPAGO*VICTORMANUEL"): son retiros de efectivo que se pagan con la tarjeta: gasto compartido en la categoría nueva "Retiros de efectivo" (`cat: "retiros"`, `comp: true`), 94 movimientos. La tarjeta la usan solo ellos aunque la titular sea otra persona; si la titular hace una compra, la reasignan a mano.
 - [ ] Anotar todo lo que falle o moleste en la lista de "Problemas encontrados" de abajo.
 
 **Listo cuando:** los dos pueden anotar desde el iPhone y una semana de gastos reales queda bien registrada.
@@ -36,7 +38,7 @@ Para que las mejoras no rompan lo que ya funciona, sobre todo trabajando en la o
 ## Fase 2: Que los datos no se pierdan ni se pisen
 
 - [ ] Guardar tarjetas, reglas y categorías como documentos separados para que dos personas editando a la vez no se pisen los cambios (hoy todo va en `config/main`).
-- [ ] Ver movimientos de más de 12 meses cuando se pidan (hoy se cargan solo los últimos 12).
+- [x] Ver movimientos de más de 12 meses (2026-11-25): se carga todo el historial y el nombre del mes abre un selector de año y mes. Si con los años la carga se pone lenta, volver a cargar por rangos.
 - [ ] Respaldo mensual en CSV con recordatorio.
 - [ ] Arreglar que la pantalla de fondo quede en "Cargando…" mientras hay una ventana abierta.
 - [ ] Seleccionar varios movimientos para cambiar categoría o borrarlos de una vez.
@@ -66,7 +68,12 @@ Para que las mejoras no rompan lo que ya funciona, sobre todo trabajando en la o
 
 ---
 
-## Rediseño visual (acordado 2026-11-25, pendiente de aplicar)
+## Rediseño visual (acordado y aplicado 2026-11-25, versión 13)
+
+- [x] Paleta Grafito y ámbar con modo oscuro, menú lateral en el computador y barra inferior con "+" y "Más" en el celular.
+- [x] Panel tipo Power BI con filtros por persona y tarjeta (los ingresos cuentan el sueldo del último día hábil anterior, igual que "pueden gastar hoy").
+- [x] Movimientos: lista sin totales por día, ícono de color por categoría y panel de detalle (cambiar categoría, persona y reparto ahí mismo; presupuesto de la categoría; historial del comercio en 6 meses). En celular y pantallas angostas, tocar un movimiento abre el editor.
+- [ ] Revisarlo con datos reales en claude.ai y en los iPhone.
 
 - Computador: menú lateral oscuro con "Anotar" arriba; secciones Panel, Gastos, Tarjetas, Plan (presupuesto, fijos, deudas, metas), Entre nosotros, Asesor, Ajustes. Celular: barra inferior de 5 con "+" al centro.
 - Inicio como panel tipo Power BI: filtros (mes, persona, tarjeta), 4 indicadores (pueden gastar hoy, gastado vs mes anterior, ingresos, % ahorro), barras ingresos/gastos por mes, dona por categoría, gasto por persona, tarjetas y top comercios.

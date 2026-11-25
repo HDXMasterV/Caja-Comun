@@ -85,7 +85,7 @@ const DEF_MEDIOS = [
 const DEF_CFG = {cats:DEF_CATS, medios:DEF_MEDIOS, reglas:DEF_RULES, miembros:[], reparto:{}, ingresoMensual:0, ahorroMensual:0, compDefault:true, okDup:[]};
 const ARTIFACT_URL = 'https://claude.ai/artifact/5jmt1fk1VGtxwUiL2fvmsk';
 const TIPO_MEDIO = {credito:'Crédito', debito:'Débito', efectivo:'Efectivo', otro:'Otro'};
-const VIEWS = [['inicio','Inicio'],['movimientos','Movimientos'],['tarjetas','Tarjetas'],['importar','Importar'],['presupuesto','Presupuesto'],['fijos','Pagos fijos'],['deudas','Deudas y cuotas'],['metas','Metas'],['entre-nosotros','Entre nosotros'],['asesor','Asesor'],['ajustes','Ajustes']];
+const VIEWS = [['inicio','Panel'],['movimientos','Movimientos'],['tarjetas','Tarjetas'],['importar','Importar'],['presupuesto','Presupuesto'],['fijos','Pagos fijos'],['deudas','Deudas y cuotas'],['metas','Metas'],['entre-nosotros','Entre nosotros'],['asesor','Asesor'],['ajustes','Ajustes']];
 const MONTH_VIEWS = new Set(['inicio','movimientos','presupuesto','entre-nosotros']);
 
 /* ---------- estado ---------- */
@@ -94,7 +94,7 @@ const S = {
   config:null, movs:[], recs:[], deudas:[], metas:[], refs:new Set(),
   ready:{cfg:false, movs:false, recs:false, deudas:false, metas:false},
   view:'inicio', ym:curYM(), names:{}, avatars:{},
-  f:{q:'', cat:'', quien:'', tipo:'', cuenta:''},
+  f:{q:'', cat:'', quien:'', tipo:'', cuenta:''}, pf:{quien:'', cuenta:''}, sel:'',
   imp:{rows:[], status:'', busy:false, cuenta:'', quien:'', comp:null, paste:'', note:''},
   chat:[], chatBusy:false, analisis:'', analisisBusy:false, presSug:null, presBusy:false,
   autoDone:false, joined:false, pendingRender:false, _st:{}, yo: null,
