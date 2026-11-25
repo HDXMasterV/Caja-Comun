@@ -5,7 +5,7 @@ const QSTOP = new Set(['gaste','gastamos','pague','pagamos','compre','compramos'
 function medioMatch(t) {
   let best = null, bl = 0;
   for (const m of cfg().medios) {
-    const words = norm(m.n + ' ' + (m.alias || '')).split(' ').filter(w => w.length > 2 && !['tarjeta', 'cuenta', 'del', 'los'].includes(w));
+    const words = norm(m.n + ' ' + (m.alias || '')).split(' ').filter(w => w.length > 2 && !['tarjeta', 'cuenta', 'del', 'los', 'banco'].includes(w));
     for (const w of words) if (new RegExp('\\b' + w + '\\b').test(t) && w.length > bl) { best = m; bl = w.length; }
   }
   return best;

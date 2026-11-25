@@ -112,12 +112,14 @@ function vImportar() {
     ${q.faltanEnArchivo.length ? `<details><summary>Ver ${q.faltanEnArchivo.length} anotadas que no están en el archivo</summary><p class="hint">Puede que se hayan anotado con otro monto, en otra tarjeta, o que entren en el próximo estado de cuenta.</p><div class="list">${q.faltanEnArchivo.map(movRow).join('')}</div></details>` : ''}</section>`; })()}
   ${I.rows.length ? `<section class="card">
     <div class="card-h"><h2>Revisa antes de guardar</h2><span class="sub num" id="imp-tot">${sel.length} de ${I.rows.length} seleccionados · ${fmt(sum(sel.filter(r => r.tipo === 'gasto').map(r => r.monto)))} en gastos</span></div>
+    ${!I.cuenta ? '<p class="small" style="color:var(--crit-ink);font-weight:600">Elige arriba la tarjeta o cuenta de estos movimientos; sin eso no se pueden guardar.</p>' : ''}
+    ${I.cierre ? `<p class="small muted">Las cuotas de compras anteriores quedaron con fecha ${esc(dShort(I.cierre))}, el cierre de ${esc(I.cuenta)}, para que cuenten en este estado de cuenta.</p>` : ''}
     ${I.rows.some(r => r.dup) ? '<p class="small muted">Las filas marcadas en amarillo parecen estar ya registradas, por eso quedaron sin seleccionar.</p>' : ''}
     <div class="tblwrap"><table class="tbl"><thead><tr><th><input type="checkbox" id="imp-all" aria-label="Seleccionar todo"${sel.length === I.rows.length ? ' checked' : ''}></th><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th class="r">Monto</th></tr></thead><tbody>
     ${I.rows.map(r => `<tr class="${r.dup ? 'dup' : ''}" data-k="${esc(r.k)}">
       <td><input type="checkbox" data-f="sel"${r.sel ? ' checked' : ''} aria-label="Incluir"></td>
       <td><input type="date" data-f="fecha" value="${esc(r.fecha)}" style="min-width:130px"></td>
-      <td style="min-width:180px"><input type="text" data-f="desc" value="${esc(r.desc)}">${r.cuota ? `<div class="small muted">cuota ${esc(r.cuota)}</div>` : ''}${r.dup ? `<div class="small muted">Parecido a: ${esc(r.dup)}</div>` : ''}</td>
+      <td style="min-width:180px"><input type="text" data-f="desc" value="${esc(r.desc)}">${r.cuota ? `<div class="small muted">cuota ${esc(r.cuota)}${r.fechaCompra ? ` · compra del ${esc(dShort(r.fechaCompra))}` : ''}</div>` : ''}${r.dup ? `<div class="small muted">Parecido a: ${esc(r.dup)}</div>` : ''}</td>
       <td><select data-f="cat" style="min-width:150px">${allCatOptions(r.cat)}</select></td>
       <td><select data-f="tipo"><option value="gasto"${r.tipo === 'gasto' ? ' selected' : ''}>Gasto</option><option value="ingreso"${r.tipo === 'ingreso' ? ' selected' : ''}>Ingreso</option><option value="transf"${r.tipo === 'transf' ? ' selected' : ''}>Traspaso</option></select></td>
       <td class="r"><input type="text" inputmode="numeric" data-f="monto" value="${fmtN(r.monto)}" style="width:110px;text-align:right"></td></tr>`).join('')}

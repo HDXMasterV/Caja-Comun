@@ -72,7 +72,7 @@ const ACT = {
   },
   analizar: () => analizarMes(),
   pegar: () => openModal('Pegar movimientos', `<p class="small muted">Copia los movimientos desde tu banco en línea (selecciona la tabla y copia) y pégalos aquí.</p><textarea id="pg-t" rows="10" placeholder="Fecha  Descripción  Cargo  Abono…"></textarea><div class="row"><span class="sp"></span><button class="btn" type="button" data-act="cerrar">Cancelar</button><button class="btn pri" type="button" id="pg-ok">Leer movimientos</button></div>`, sh => { $('#pg-ok', sh).onclick = () => { const t = $('#pg-t', sh).value.trim(); if (!t) return; closeModal(); processTexts([{name:'texto pegado', text:t, aoa: parseDelimited(t)}], []); }; }),
-  'imp-limpiar': () => { S.imp.rows = []; S.imp.status = ''; S.imp.note = ''; render(); },
+  'imp-limpiar': () => { S.imp.rows = []; S.imp.status = ''; S.imp.note = ''; S.imp.cierre = ''; render(); },
   'imp-guardar': () => saveImport(),
   'pres-prom': async () => { const cats = cfg().cats.map(c => { if (c.t === 'ingreso' || c.id === 'ahorro') return c; const av = avgCat(c.id); return av > 0 ? {...c, p: Math.round(av / 1000) * 1000} : c; });await saveConfig({cats}); toast('Presupuesto actualizado con el promedio'); },
   'pres-ia': () => proponerPresupuesto(),
@@ -126,7 +126,7 @@ document.addEventListener('change', async e => {
   if (t.id === 'f-quien') { S.f.quien = t.value; t.blur(); render(); return; }
   if (t.id === 'f-tipo') { S.f.tipo = t.value; t.blur(); render(); return; }
   if (t.id === 'f-cuenta') { S.f.cuenta = t.value; t.blur(); render(); return; }
-  if (t.id === 'imp-cuenta') { S.imp.cuenta = t.value; recheckDups(); t.blur(); render(); return; }
+  if (t.id === 'imp-cuenta') { S.imp.cuenta = t.value; fixCuotaDates(); recheckDups(); S.imp.rows.sort((a, b) => b.fecha.localeCompare(a.fecha)); t.blur(); render(); return; }
   if (t.id === 'imp-quien') { S.imp.quien = t.value; return; }
   if (t.id === 'imp-comp') { S.imp.comp = t.checked; return; }
   if (t.id === 'imp-all') { S.imp.rows.forEach(r => r.sel = t.checked); t.blur(); render(); return; }

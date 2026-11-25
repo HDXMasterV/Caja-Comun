@@ -73,3 +73,7 @@ Para que las mejoras no rompan lo que ya funciona, sobre todo trabajando en la o
 ## Problemas encontrados
 
 (Anotar aquí lo que falle durante la Fase 0 y después.)
+
+- [x] **2026-11-25 · Importar deja guardar sin elegir tarjeta.** Se subió el estado de cuenta de Banco Ripley (111 movimientos) con "Cuenta o tarjeta" vacío; se corrigió a mano a "Banco Ripley Carito". Arreglado: ahora detecta la tarjeta por el banco del documento y no deja guardar sin tarjeta.
+- [x] **2026-11-25 · Las cuotas del estado de cuenta quedan con la fecha de la compra original.** Arreglado: al importar con una tarjeta de crédito, las cuotas de compras anteriores al período se fechan en el cierre. Ej.: "MP *MERCADO LIBR cuota 10/12" quedó en febrero y "RIPLEY CUOTA REPROG. 10/10" ($286.138) también en febrero. Así se cuentan en meses pasados y no en el estado de cuenta actual. Arreglo: en estados de cuenta, fechar las cuotas en el período facturado. Datos ya corregidos: 25 cuotas movidas al 2026-11-18 (cierre), con la fecha original guardada en `fechaCompra`. Falta corregir la importación.
+- [ ] **2026-11-25 · La regla "ripley" manda todo a Ropa,** incluidas compras de Ripley que no son ropa (sábanas). Revisar reglas de tiendas por departamento.

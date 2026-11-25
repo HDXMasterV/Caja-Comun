@@ -96,7 +96,9 @@ ${cats}
 Preferencias del usuario (si la descripción contiene el texto, usa esa categoría): ${reglas}
 
 Responde SOLO con un arreglo JSON. Cada elemento:
-{"fecha":"AAAA-MM-DD","descripcion":"texto original resumido","comercio":"nombre limpio del comercio o la persona","monto":12990,"tipo":"gasto","categoria":"super","cuota":null}
+{"fecha":"AAAA-MM-DD","descripcion":"texto original resumido","comercio":"nombre limpio del comercio o la persona","monto":12990,"tipo":"gasto","categoria":"super","cuota":null,"emisor":"Banco Ripley"}
+- emisor: el banco o la tarjeta dueña del documento (no el comercio), o vacío si no se sabe.
+- fecha: la fecha de la operación tal como aparece en el documento.
 Reglas:
 - monto: número entero positivo en pesos chilenos. En Chile 1.234.567 son pesos con punto de miles.
 - tipo "gasto" para compras, cargos, giros y comisiones; "ingreso" para abonos, depósitos, sueldos y transferencias recibidas de terceros; "transf" para pagos de tarjeta de crédito, traspasos entre cuentas propias o pagos recibidos en la tarjeta.
@@ -157,10 +159,29 @@ async function processTexts(texts, imgs) {
       catch (e) { console.warn(e); S.imp.note = e && e.code === 'image_rejected' ? 'Una imagen no se pudo leer. Prueba con otra captura más nítida.' : 'Claude no pudo leer las imágenes.'; }
     }
   }
+  let detectada = '';
+  if (!S.imp.cuenta && rows.length) {
+    const pistas = [...new Set(rows.map(x => x && x.emisor).filter(Boolean))].join(' ') + ' ' + texts.map(t => t.text.slice(0, 1500)).join(' ');
+    const m = medioMatch(norm(pistas));
+    if (m) { S.imp.cuenta = m.n; detectada = m.n; }
+  }
   addImportRows(rows, origen);
   S.imp.busy = false;
-  S.imp.status = rows.length ? `Se encontraron ${rows.length} movimientos.` : (S.imp.note ? '' : 'No se encontraron movimientos en lo que subiste.');
+  S.imp.status = rows.length ? `Se encontraron ${rows.length} movimientos.${detectada ? ` Parecen ser de ${detectada}; cámbiala arriba si no corresponde.` : ''}` : (S.imp.note ? '' : 'No se encontraron movimientos en lo que subiste.');
   render();
+}
+function fixCuotaDates() {
+  for (const r of S.imp.rows) if (r.fechaCompra) { r.fecha = r.fechaCompra; delete r.fechaCompra; }
+  const card = medioByName(S.imp.cuenta);
+  if (!card || card.tipo !== 'credito' || !Number(card.cierre)) return 0;
+  const normales = S.imp.rows.filter(r => !r.cuota && r.tipo === 'gasto').map(r => r.fecha).sort();
+  const ref = normales.length ? normales[normales.length - 1] : S.imp.rows.map(r => r.fecha).sort().pop();
+  if (!ref) return 0;
+  const cy = cardCycle(card, ref), inicio = addDays(cy.ult, 1);
+  let n = 0;
+  for (const r of S.imp.rows) if (r.cuota && r.fecha < inicio) { r.fechaCompra = r.fecha; r.fecha = cy.prox; n++; }
+  S.imp.cierre = n ? cy.prox : '';
+  return n;
 }
 function sameMerchant(a, b) {
   if (!a || !b) return false;
@@ -201,14 +222,20 @@ function addImportRows(rows, origen) {
     if (dup) { r.dup = `${dup.desc} · ${dShort(dup.fecha)}`; r.sel = false; }
     S.imp.rows.push(r);
   }
+  if (fixCuotaDates()) recheckDups();
   S.imp.rows.sort((a, b) => b.fecha.localeCompare(a.fecha));
 }
 async function saveImport() {
   const sel = S.imp.rows.filter(r => r.sel && r.monto > 0); if (!sel.length) return;
+  if (!S.imp.cuenta) {
+    toast('Elige la tarjeta o cuenta de estos movimientos antes de guardar.');
+    const s = $('#imp-cuenta'); if (s) { s.scrollIntoView({block:'center'}); s.focus(); }
+    return;
+  }
   S.imp.busy = true; S.imp.status = 'Guardando…'; render();
   const I = S.imp;
   const ok = await w(async () => {
-    for (let i = 0; i < sel.length; i += 10) await Promise.all(sel.slice(i, i + 10).map(r => S.db.collection('movs').doc(uid() + i + Math.random().toString(36).slice(2, 5)).set(movDoc({fecha: r.fecha, monto: r.monto, tipo: r.tipo, desc: r.desc, comercio: r.comercio, cat: r.tipo === 'transf' ? '' : r.cat, cuenta: I.cuenta, quien: I.quien, comp: r.tipo === 'gasto' && !!I.comp, origen: r.origen || 'cartola', ...(r.cuota ? {cuota: r.cuota} : {})}))));
+    for (let i = 0; i < sel.length; i += 10) await Promise.all(sel.slice(i, i + 10).map(r => S.db.collection('movs').doc(uid() + i + Math.random().toString(36).slice(2, 5)).set(movDoc({fecha: r.fecha, monto: r.monto, tipo: r.tipo, desc: r.desc, comercio: r.comercio, cat: r.tipo === 'transf' ? '' : r.cat, cuenta: I.cuenta, quien: I.quien, comp: r.tipo === 'gasto' && !!I.comp, origen: r.origen || 'cartola', ...(r.cuota ? {cuota: r.cuota} : {}), ...(r.fechaCompra ? {fechaCompra: r.fechaCompra} : {})}))));
   });
   if (ok) {
     const learned = sel.filter(r => r.catUser && r.tipo !== 'transf');
