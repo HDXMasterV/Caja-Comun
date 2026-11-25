@@ -11,7 +11,8 @@ function iphoneGuide() {
       <span class="small">Crea otro atajo con estas acciones, en orden:</span>
       <span class="small">a) <b>Dictar texto</b>.<br>b) <b>Reemplazar texto</b>: activa "Expresión regular", busca lo de abajo y reemplaza por un guion (-):</span>${copyBox('ip-r1', '[^A-Za-z0-9]+')}
       <span class="small">c) <b>Texto</b>: pega esto y al final inserta la variable "Texto actualizado":</span>${copyBox('ip-u2', ARTIFACT_URL + '#g-')}
-      <span class="small">d) <b>Abrir URL</b> con ese texto. Dices "doce lucas en el jumbo con la cmr" y se abre la app con el gasto listo para guardar.</span></div>
+      <span class="small">d) <b>Abrir URL</b> con ese texto.</span>
+      <span class="small">e) Ponle de nombre <b>Quiero agregar un nuevo gasto</b>. Dices <b>"Oye Siri, quiero agregar un nuevo gasto"</b>, luego por ejemplo "doce lucas en el jumbo con la ripley", y se abre la app con el gasto listo para guardar.</span></div>
     <div class="step"><b>3. Automático al pagar con Apple Pay</b>
       <span class="small">Solo si la tarjeta está en Wallet y pagan con el iPhone o el reloj. En Atajos → Automatización → <b>Transacción</b>, elige las tarjetas y "Ejecutar de inmediato". Acciones:</span>
       <span class="small">a) <b>Texto</b> con las variables Comercio, Importe y Tarjeta.<br>b) <b>Reemplazar texto</b> de <code>[.,$]</code> por nada (con expresión regular).<br>c) <b>Reemplazar texto</b> de <code>[^A-Za-z0-9]+</code> por un guion.<br>d) <b>Texto</b>: el enlace del paso 2 más el resultado.<br>e) <b>Abrir URL</b>.</span>
