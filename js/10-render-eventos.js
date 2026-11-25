@@ -11,6 +11,7 @@ function render() {
   const chatScroll = $('#chat') ? $('#chat').scrollTop : null;
   $('#tabs').innerHTML = VIEWS.map(([k, l]) => `<a href="#${k}"${k === S.view ? ' aria-current="page"' : ''}>${l}</a>`).join('');
   $('#mlabel').textContent = ymLabel(S.ym);
+  $('#who').textContent = whoText();
   $('#monthbox').style.visibility = MONTH_VIEWS.has(S.view) ? 'visible' : 'hidden';
   const fn = {inicio:vInicio, movimientos:vMovimientos, tarjetas:vTarjetas, importar:vImportar, presupuesto:vPresupuesto, fijos:vFijos, deudas:vDeudas, metas:vMetas, 'entre-nosotros':vEntre, asesor:vAsesor, ajustes:vAjustes}[S.view] || vInicio;
   const banners = statusBanner() + (S.view !== 'importar' && S.view !== 'asesor' ? exampleBanner() : '');
@@ -72,6 +73,8 @@ const ACT = {
   },
   analizar: () => analizarMes(),
   pegar: () => openModal('Pegar movimientos', `<p class="small muted">Copia los movimientos desde tu banco en línea (selecciona la tabla y copia) y pégalos aquí.</p><textarea id="pg-t" rows="10" placeholder="Fecha  Descripción  Cargo  Abono…"></textarea><div class="row"><span class="sp"></span><button class="btn" type="button" data-act="cerrar">Cancelar</button><button class="btn pri" type="button" id="pg-ok">Leer movimientos</button></div>`, sh => { $('#pg-ok', sh).onclick = () => { const t = $('#pg-t', sh).value.trim(); if (!t) return; closeModal(); processTexts([{name:'texto pegado', text:t, aoa: parseDelimited(t)}], []); }; }),
+  soy: el => { setYo(el.dataset.v); toast(`Este dispositivo queda como ${nameOf(el.dataset.v).replace(' (tú)', '')}`); render(); },
+  'persona-add': async () => { const n = ($('#pn-new') || {}).value; if (!n || !n.trim()) { toast('Escribe un nombre.'); return; } const id = 'p' + uid(); await saveConfig({personas: [...personas(), {id, n: n.trim()}]}); },
   'imp-limpiar': () => { S.imp.rows = []; S.imp.status = ''; S.imp.note = ''; S.imp.cierre = ''; render(); },
   'imp-guardar': () => saveImport(),
   'pres-prom': async () => { const cats = cfg().cats.map(c => { if (c.t === 'ingreso' || c.id === 'ahorro') return c; const av = avgCat(c.id); return av > 0 ? {...c, p: Math.round(av / 1000) * 1000} : c; });await saveConfig({cats}); toast('Presupuesto actualizado con el promedio'); },
@@ -126,7 +129,7 @@ document.addEventListener('change', async e => {
   if (t.id === 'f-quien') { S.f.quien = t.value; t.blur(); render(); return; }
   if (t.id === 'f-tipo') { S.f.tipo = t.value; t.blur(); render(); return; }
   if (t.id === 'f-cuenta') { S.f.cuenta = t.value; t.blur(); render(); return; }
-  if (t.id === 'imp-cuenta') { S.imp.cuenta = t.value; fixCuotaDates(); recheckDups(); S.imp.rows.sort((a, b) => b.fecha.localeCompare(a.fecha)); t.blur(); render(); return; }
+  if (t.id === 'imp-cuenta') { S.imp.cuenta = t.value; const du = (medioByName(t.value) || {}).usa; if (du && personaOf(du)) S.imp.quien = du; fixCuotaDates(); recheckDups(); S.imp.rows.sort((a, b) => b.fecha.localeCompare(a.fecha)); t.blur(); render(); return; }
   if (t.id === 'imp-quien') { S.imp.quien = t.value; return; }
   if (t.id === 'imp-comp') { S.imp.comp = t.checked; return; }
   if (t.id === 'imp-all') { S.imp.rows.forEach(r => r.sel = t.checked); t.blur(); render(); return; }
@@ -150,6 +153,9 @@ document.addEventListener('change', async e => {
   if (t.dataset.catn !== undefined) { const v = t.value.trim(); if (!v) return; await saveConfig({cats: cfg().cats.map(c => c.id === t.dataset.catn ? {...c, n: v} : c)}); return; }
   if (t.dataset.catg !== undefined) { await saveConfig({cats: cfg().cats.map(c => c.id === t.dataset.catg ? {...c, g: t.value} : c)}); return; }
   if (t.id === 'pf-comp') { await saveConfig({compDefault: t.checked}); return; }
+  if (t.dataset.pn !== undefined) { const v = t.value.trim(); if (!v) return; await saveConfig({personas: personas().map(p => p.id === t.dataset.pn ? {...p, n: v} : p)}); return; }
+  if (t.id === 'dev-yo') { setYo(t.value); t.blur(); render(); return; }
+  if (t.id === 'alias-me') { if (!S.me || !S.me.id) return; await saveConfig({alias: {...(cfg().alias || {}), [S.me.id]: t.value}}); return; }
 });
 
 /* ---------- pagos ---------- */
@@ -159,7 +165,7 @@ async function marcarPagado(key) {
   const today = todayISO();
   const fecha = ym === curYM() && p.fecha > today ? today : p.fecha;
   const src = p.src;
-  await w(() => S.db.doc(`movs/pago-${kind}-${id}-${ym}`).set(movDoc({fecha, monto: p.monto, tipo:'gasto', desc: p.nombre, comercio: src.nombre, cat: p.cat || 'otros', cuenta: src.cuenta || '', quien: src.quien || (S.me && S.me.id) || '', comp: src.comp != null ? !!src.comp : cfg().compDefault, origen:'pago', ref: key, ...(src.ej ? {ej:true} : {})})), 'Pago registrado');
+  await w(() => S.db.doc(`movs/pago-${kind}-${id}-${ym}`).set(movDoc({fecha, monto: p.monto, tipo:'gasto', desc: p.nombre, comercio: src.nombre, cat: p.cat || 'otros', cuenta: src.cuenta || '', quien: src.quien || yo(), comp: src.comp != null ? !!src.comp : cfg().compDefault, origen:'pago', ref: key, ...(src.ej ? {ej:true} : {})})), 'Pago registrado');
 }
 async function autoRecs() {
   if (S.autoDone || S.ro || !S.db || !(S.ready.movs && S.ready.recs)) return;

@@ -54,7 +54,7 @@ function bindMonto(el) {
 /* Movimiento: crear y editar */
 function movForm(m) {
   const nuevo = !m;
-  m = m || {tipo:'gasto', fecha:todayISO(), quien:(S.me && S.me.id) || '', comp:cfg().compDefault, cat:'', cuenta:''};
+  m = m || {tipo:'gasto', fecha:todayISO(), quien:yo(), comp:cfg().compDefault, cat:'', cuenta:''};
   const tipo = ['ingreso', 'transf', 'liq'].includes(m.tipo) ? m.tipo : 'gasto';
   openModal(nuevo ? 'Anotar movimiento' : 'Editar movimiento', `
     <form id="mf" class="fgrid" autocomplete="off">

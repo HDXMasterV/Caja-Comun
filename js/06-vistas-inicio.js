@@ -12,6 +12,7 @@ function statusBanner() {
   if (S.noDb) return `<div class="banner">Para guardar y compartir datos abre esta página en claude.ai con tu sesión iniciada.</div>`;
   if (S.slow && !S.ready.movs) return `<div class="banner">Todavía no se pudo conectar con tus datos. Revisa tu conexión; la página seguirá intentando.</div>`;
   if (S.ro) return `<div class="banner">Puedes ver los datos, pero no guardar cambios. Pide a quien te compartió la página acceso de colaborador.</div>`;
+  if (personas().length > 1 && !(S.yo && personaOf(S.yo))) return `<div class="banner"><b>¿Quién usa este dispositivo?</b><span class="sp small muted">Así lo que anotes queda a tu nombre. Se recuerda en este navegador.</span>${personas().map(p => `<button class="btn sm pri" type="button" data-act="soy" data-v="${esc(p.id)}">Soy ${esc(p.n)}</button>`).join('')}</div>`;
   return '';
 }
 function vInicio() {
@@ -87,7 +88,7 @@ function movRow(m) {
 function vImportar() {
   const I = S.imp, sel = I.rows.filter(r => r.sel);
   const canImg = !!(S.limits && S.limits.images);
-  const me = (S.me && S.me.id) || '';
+  const me = yo();
   if (!I.quien) I.quien = me;
   if (I.comp === null) I.comp = cfg().compDefault;
   return `<section class="card">

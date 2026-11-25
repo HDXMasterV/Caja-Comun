@@ -31,7 +31,8 @@ El orden de trabajo y lo pendiente están en `PLAN.md`. Al empezar una sesión, 
 - `tools/mock.js` y `tools/probar.ps1`: prueba local con datos simulados.
 
 ## Datos (capacidad db)
-- `config/main`: `cats`, `reglas` ({p, c}), `medios` (tarjetas/cuentas: id, n, tipo, alias, adicional, titular, cierre, pago, cupo), `miembros`, `reparto`, `ingresoMensual`, `ahorroMensual`, `compDefault`, `okDup`.
+- `config/main`: `cats`, `reglas` ({p, c}), `medios` (tarjetas/cuentas: id, n, tipo, alias, adicional, titular, cierre, pago, cupo, usa = persona dueña), `personas` ({id, n}), `alias` ({idCuentaClaude: idPersona}), `miembros`, `reparto`, `ingresoMensual`, `ahorroMensual`, `compDefault`, `okDup`.
+- **Personas:** Victor y Carol usan la misma cuenta de Claude, así que las personas no salen de la cuenta: están en `config.personas` y cada dispositivo elige quién es (`localStorage` "cc-yo", función `yo()`). `quien` en los datos es el id de persona (`victor`, `carol`); los ids de cuenta antiguos se traducen con `config.alias` al cargar (`remap()`).
 - `movs/*`: fecha, monto (entero positivo), tipo (`gasto`|`ingreso`|`transf`|`liq`), desc, comercio, cat, cuenta (nombre del medio), quien (id de usuario), comp, origen, ref (pagos: `r:`, `d:`, `t:`), cuota, ej (ejemplo).
 - `recs/*` pagos fijos, `deudas/*`, `metas/*`. Datos de ejemplo llevan `ej: true`.
 - Rutas por hash: `#anotar` y `#g-texto-con-guiones` abren el registro rápido (usado por Atajos del iPhone).

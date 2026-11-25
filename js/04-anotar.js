@@ -51,13 +51,15 @@ tipo es "gasto" o "ingreso". Si no se entiende el monto, usa 0.`, {modelTier: 'q
 let sampleReady; const sampleWait = new Promise(r => { sampleReady = r; });
 function quickAdd(initial) {
   const Q = {items: [], busy: false};
-  const me = (S.me && S.me.id) || '';
+  const me = yo();
   const lastCard = lsGet('cc-medio') || '';
   const norm1 = it => {
     const tipo = it.tipo === 'ingreso' ? 'ingreso' : 'gasto';
     let cat = it.cat && catObj(it.cat) && (catObj(it.cat).t || 'gasto') === tipo ? it.cat : (applyRules(it.desc) || (tipo === 'ingreso' ? 'sueldo' : 'otros'));
     if (it.cuotas) cat = cat || 'otros';
-    return {monto: it.monto || 0, desc: it.desc || '', cat, cuenta: it.cuenta || (tipo === 'gasto' ? lastCard : ''), fecha: it.fecha || todayISO(), tipo, quien: it.quien || me, comp: tipo === 'gasto' ? cfg().compDefault : false, cuotas: it.cuotas || null};
+    const cuenta = it.cuenta || (tipo === 'gasto' ? lastCard : '');
+    const dueno = (medioByName(cuenta) || {}).usa;
+    return {monto: it.monto || 0, desc: it.desc || '', cat, cuenta, fecha: it.fecha || todayISO(), tipo, quien: it.quien || (dueno && personaOf(dueno) ? dueno : me), comp: tipo === 'gasto' ? cfg().compDefault : false, cuotas: it.cuotas || null};
   };
   openModal('Anotar rápido', `
     <form id="qa-f" style="display:grid;gap:10px" autocomplete="off">

@@ -21,7 +21,16 @@ function iphoneGuide() {
 }
 function vAjustes() {
   const c = cfg();
+  const ps = personas();
   return `<div class="grid">
+    <section class="card span2"><div class="card-h"><h2>Personas del hogar</h2></div>
+      <p class="small muted">Cada persona tiene su nombre en la app aunque usen la misma cuenta de Claude. En cada celular o computador se elige quién lo usa.</p>
+      <div class="list">${ps.map(p => `<div class="li">${avatar(p.id)}<div class="main"><input type="text" data-pn="${esc(p.id)}" value="${esc(p.n)}" aria-label="Nombre"></div>${isMe(p.id) ? '<span class="chip acc">este dispositivo</span>' : ''}</div>`).join('') || '<p class="small muted">Todavía no hay personas definidas.</p>'}</div>
+      <div class="row" style="flex-wrap:nowrap"><input id="pn-new" type="text" placeholder="Agregar persona" style="flex:1" aria-label="Nombre de la nueva persona"><button class="btn sm" type="button" data-act="persona-add">Agregar</button></div>
+      ${ps.length ? `<div class="fgrid">
+        <label class="field"><span>Este dispositivo es de</span><select id="dev-yo">${ps.map(p => `<option value="${esc(p.id)}"${p.id === S.yo ? ' selected' : ''}>${esc(p.n)}</option>`).join('')}${S.yo && personaOf(S.yo) ? '' : '<option value="" selected>Elegir…</option>'}</select></label>
+        ${S.me && S.me.id ? `<label class="field"><span>Lo anotado antes con esta cuenta es de</span><select id="alias-me">${ps.map(p => `<option value="${esc(p.id)}"${aliasOf(S.me.id) === p.id ? ' selected' : ''}>${esc(p.n)}</option>`).join('')}${aliasOf(S.me.id) === S.me.id ? '<option value="" selected>Elegir…</option>' : ''}</select></label>` : ''}
+      </div>` : ''}</section>
     <section class="card span2"><div class="card-h"><h2>Categorías</h2><button class="btn sm" type="button" data-act="cat-new">Agregar categoría</button></div>
       <div class="tblwrap"><table class="tbl"><thead><tr><th>Nombre</th><th>Tipo</th><th>Grupo</th><th></th></tr></thead><tbody>
       ${c.cats.map(x => `<tr><td><input type="text" data-catn="${esc(x.id)}" value="${esc(x.n)}" aria-label="Nombre"></td><td>${x.t === 'ingreso' ? 'Ingreso' : 'Gasto'}</td><td>${x.t === 'ingreso' ? '—' : `<select data-catg="${esc(x.id)}" aria-label="Grupo"><option value="necesidad"${x.g === 'necesidad' ? ' selected' : ''}>Necesidad</option><option value="deseo"${x.g === 'deseo' ? ' selected' : ''}>Gusto</option><option value="ahorro"${x.g === 'ahorro' ? ' selected' : ''}>Ahorro</option></select>`}</td><td class="r">${['otros', 'ahorro', 'sueldo', 'otros_ing', 'deudas'].includes(x.id) ? '' : `<button class="btn sm danger" type="button" data-act="cat-del" data-v="${esc(x.id)}">Quitar</button>`}</td></tr>`).join('')}

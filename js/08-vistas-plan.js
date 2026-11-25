@@ -49,7 +49,7 @@ function vFijos() {
 }
 function recForm(r, tipo) {
   const nuevo = !r;
-  r = r || {tipo, nombre:'', monto:0, dia:Number(todayISO().slice(8)), frec:'mensual', mesAnual:Number(todayISO().slice(5, 7)), cat: tipo === 'ingreso' ? 'sueldo' : 'vivienda', auto: true, sus:false, cuenta:'', quien:(S.me && S.me.id) || '', comp:cfg().compDefault, activo:true};
+  r = r || {tipo, nombre:'', monto:0, dia:Number(todayISO().slice(8)), frec:'mensual', mesAnual:Number(todayISO().slice(5, 7)), cat: tipo === 'ingreso' ? 'sueldo' : 'vivienda', auto: true, sus:false, cuenta:'', quien:yo(), comp:cfg().compDefault, activo:true};
   openModal(nuevo ? (r.tipo === 'ingreso' ? 'Nuevo ingreso fijo' : 'Nuevo gasto fijo') : 'Editar pago fijo', `
     <form id="rf" class="fgrid" autocomplete="off">
       <label class="field full"><span>Nombre</span><input id="rf-n" type="text" value="${esc(r.nombre)}" placeholder="${r.tipo === 'ingreso' ? 'Ej: Sueldo' : 'Ej: Arriendo, Netflix, Enel'}" required></label>
@@ -109,7 +109,7 @@ function vDeudas() {
 }
 function deudaForm(d) {
   const nuevo = !d || !d.id;
-  d = {tipo:'cuotas', nombre:'', cuota:0, total:12, primera:curYM(), tasa:'', dia:5, cuenta:'', quien:(S.me && S.me.id) || '', comp:false, ...(d || {})};
+  d = {tipo:'cuotas', nombre:'', cuota:0, total:12, primera:curYM(), tasa:'', dia:5, cuenta:'', quien:yo(), comp:false, ...(d || {})};
   openModal(nuevo ? 'Nueva deuda' : 'Editar deuda', `
     <form id="df" class="fgrid" autocomplete="off">
       <div class="full"><div class="seg" role="group" aria-label="Tipo"><button type="button" data-t="cuotas" aria-pressed="${d.tipo !== 'credito'}">Compra en cuotas</button><button type="button" data-t="credito" aria-pressed="${d.tipo === 'credito'}">Crédito</button></div></div>
@@ -211,7 +211,7 @@ function aporteForm(m) {
   openModal(`Aporte a ${m.nombre}`, `
     <form id="af" class="fgrid" autocomplete="off">
       <label class="field"><span>Monto</span><input id="af-m" type="text" inputmode="numeric" required></label>
-      <label class="field"><span>Aporta</span><select id="af-q">${memberOptions((S.me && S.me.id) || '')}</select></label>
+      <label class="field"><span>Aporta</span><select id="af-q">${memberOptions(yo())}</select></label>
       <label class="check full"><input id="af-mov" type="checkbox" checked> Anotarlo también como movimiento de ahorro del mes</label>
       <div class="full row"><span class="sp"></span><button type="button" class="btn" data-act="cerrar">Cancelar</button><button class="btn pri" type="submit">Guardar aporte</button></div>
     </form>`, sh => {

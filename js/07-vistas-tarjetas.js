@@ -9,7 +9,7 @@ function vTarjetas() {
       <div class="stat3"><div class="stat"><span class="lbl">Estados de cuenta por pagar</span><b class="num">${fmt(porPagar)}</b></div><div class="stat"><span class="lbl">Gastado en períodos abiertos</span><b class="num">${fmt(enCurso)}</b></div><div class="stat"><span class="lbl">Medios de pago</span><b class="num">${ms.length}</b></div></div>
       <p class="hint">Para las tarjetas de crédito indica el día de cierre (facturación) y el día de pago. Así la app sabe qué compras entran en cada estado de cuenta y te avisa antes del vencimiento.</p></section>
     ${infos.map(({c, i}) => `<section class="card"><div class="card-h"><h3>${esc(c.n)}</h3><button class="btn sm ghost" type="button" data-act="medio-edit" data-v="${esc(c.id)}">Editar</button></div>
-      <div class="row small"><span class="chip">${esc(TIPO_MEDIO[c.tipo] || 'Otro')}</span>${c.adicional ? `<span class="chip acc">Adicional · titular ${esc(c.titular || 'otra persona')}</span>` : ''}${c.alias ? `<span class="chip">reconoce: ${esc(c.alias)}</span>` : ''}</div>
+      <div class="row small"><span class="chip">${esc(TIPO_MEDIO[c.tipo] || 'Otro')}</span>${c.adicional ? `<span class="chip acc">Adicional · titular ${esc(c.titular || 'otra persona')}</span>` : ''}${c.usa && personaOf(c.usa) ? `<span class="chip">de ${esc(personaOf(c.usa).n)}</span>` : ''}${c.alias ? `<span class="chip">reconoce: ${esc(c.alias)}</span>` : ''}</div>
       ${i.cy ? `<div class="stat3">
           <div class="stat"><span class="lbl">Período actual</span><b class="num">${fmt(i.actual)}</b><span class="small muted">cierra el ${esc(dShort(i.cy.prox))}</span></div>
           <div class="stat"><span class="lbl">Último estado</span><b class="num">${fmt(i.facturado)}</b><span class="small muted">${i.cy.venc ? 'vence el ' + esc(dShort(i.cy.venc)) : 'cerró el ' + esc(dShort(i.cy.ult))}</span></div>
@@ -29,6 +29,7 @@ function medioForm(c) {
     <form id="tf" class="fgrid" autocomplete="off">
       <label class="field full"><span>Nombre</span><input id="tf-n" type="text" value="${esc(c.n)}" placeholder="Ej: CMR Falabella, Visa Santander, Cuenta RUT" required></label>
       <label class="field"><span>Tipo</span><select id="tf-t">${Object.entries(TIPO_MEDIO).map(([k, v]) => `<option value="${k}"${c.tipo === k ? ' selected' : ''}>${v}</option>`).join('')}</select></label>
+      ${personas().length ? `<label class="field"><span>La usa</span><select id="tf-u"><option value="">Cualquiera de los dos</option>${personas().map(p => `<option value="${esc(p.id)}"${c.usa === p.id ? ' selected' : ''}>${esc(p.n)}</option>`).join('')}</select></label>` : ''}
       <label class="field"><span>Palabras para reconocerla</span><input id="tf-a" type="text" value="${esc(c.alias || '')}" placeholder="Ej: cmr falabella"></label>
       <div class="full fgrid" id="tf-cred"${c.tipo === 'credito' ? '' : ' hidden'}>
         <label class="field"><span>Día de cierre (facturación)</span><input id="tf-c" type="number" min="1" max="31" value="${esc(c.cierre || '')}" placeholder="Ej: 20"></label>
@@ -49,7 +50,7 @@ function medioForm(c) {
       e.preventDefault();
       const n = $('#tf-n', sh).value.trim(); if (!n) return;
       if (cfg().medios.some(m => m.n === n && m.id !== c.id)) { toast('Ya existe una con ese nombre.'); return; }
-      const o = {id: c.id || 'm' + uid(), n, tipo: $('#tf-t', sh).value, alias: norm($('#tf-a', sh).value), adicional: $('#tf-ad', sh).checked, titular: $('#tf-ti', sh).value.trim(), cierre: Number($('#tf-c', sh).value) || 0, pago: Number($('#tf-p', sh).value) || 0, cupo: parseMonto($('#tf-cu', sh).value)};
+      const o = {id: c.id || 'm' + uid(), n, tipo: $('#tf-t', sh).value, alias: norm($('#tf-a', sh).value), adicional: $('#tf-ad', sh).checked, titular: $('#tf-ti', sh).value.trim(), cierre: Number($('#tf-c', sh).value) || 0, pago: Number($('#tf-p', sh).value) || 0, cupo: parseMonto($('#tf-cu', sh).value), usa: $('#tf-u', sh) ? $('#tf-u', sh).value : (c.usa || '')};
       const medios = nuevo ? [...cfg().medios, o] : cfg().medios.map(m => m.id === c.id ? o : m);
       if (!(await saveConfig({medios}))) return;
       if (!nuevo && c.n !== n) {
@@ -67,7 +68,7 @@ function cardPayForm(c) {
       <p class="small muted full">Estado de cuenta que cerró el ${esc(dShort(i.cy.ult))}${i.cy.venc ? `, vence el ${esc(dShort(i.cy.venc))}` : ''}. Las compras ya se contaron como gasto; este pago queda como traspaso para no contarlo dos veces.</p>
       <label class="field"><span>Monto pagado</span><input id="cp-m" type="text" inputmode="numeric" value="${fmtN(i.facturado)}"></label>
       <label class="field"><span>Pagado desde</span><select id="cp-d">${cuentaOptions('')}</select></label>
-      <label class="field"><span>Pagó</span><select id="cp-q">${memberOptions((S.me && S.me.id) || '')}</select></label>
+      <label class="field"><span>Pagó</span><select id="cp-q">${memberOptions(yo())}</select></label>
       <div class="full row"><span class="sp"></span><button type="button" class="btn" data-act="cerrar">Cancelar</button><button class="btn pri" type="submit">Registrar pago</button></div>
     </form>`, sh => {
     bindMonto($('#cp-m', sh));

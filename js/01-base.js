@@ -97,7 +97,7 @@ const S = {
   f:{q:'', cat:'', quien:'', tipo:'', cuenta:''},
   imp:{rows:[], status:'', busy:false, cuenta:'', quien:'', comp:null, paste:'', note:''},
   chat:[], chatBusy:false, analisis:'', analisisBusy:false, presSug:null, presBusy:false,
-  autoDone:false, joined:false, pendingRender:false, _st:{},
+  autoDone:false, joined:false, pendingRender:false, _st:{}, yo: null,
 };
 const cfg = () => {
   const c = S.config || {};
@@ -124,17 +124,27 @@ const applyRules = desc => {
 };
 
 /* ---------- personas ---------- */
+// Las personas del hogar viven en config.personas ({id, n}). Como pueden compartir una misma cuenta de Claude,
+// cada dispositivo elige quién es (localStorage "cc-yo"). config.alias asigna ids de cuenta antiguos a una persona.
+const personas = () => Array.isArray(cfg().personas) ? cfg().personas : [];
+const personaOf = id => personas().find(p => p.id === id);
+const aliasOf = id => (cfg().alias || {})[id] || id;
+const yo = () => (S.yo && personaOf(S.yo)) ? S.yo : (S.me && S.me.id ? aliasOf(S.me.id) : '');
+const conAlias = arr => arr.map(o => o && o.quien && aliasOf(o.quien) !== o.quien ? {...o, quien: aliasOf(o.quien)} : o);
 const members = () => {
-  const set = new Set(cfg().miembros.filter(Boolean));
+  const set = new Set(personas().length ? personas().map(p => p.id) : cfg().miembros.filter(Boolean).map(aliasOf));
   for (const m of S.movs) if (m.quien) set.add(m.quien);
-  if (S.me && S.me.id) set.add(S.me.id);
+  if (!personas().length && S.me && S.me.id) set.add(S.me.id);
   return [...set];
 };
-const isMe = id => !!(S.me && S.me.id && id === S.me.id);
+const isMe = id => !!id && id === yo();
+const whoText = () => { const p = personaOf(yo()); if (p) return `Hola, ${p.n}`; return S.me && S.me.name ? `Hola, ${S.me.name.split(' ')[0]}` : 'Finanzas del hogar'; };
+const setYo = id => { S.yo = id; lsSet('cc-yo', id); };
 const nameOf = id => {
   if (!id) return 'Sin asignar';
   if (id === 'ej-a') return 'Ejemplo A';
   if (id === 'ej-b') return 'Ejemplo B';
+  const p = personaOf(id); if (p) return isMe(id) ? `${p.n} (tú)` : p.n;
   const n = S.names[id];
   if (isMe(id)) return n ? `${n.split(' ')[0]} (tú)` : 'Tú';
   return n ? n.split(' ')[0] : 'Otra persona';
@@ -147,7 +157,7 @@ const avatar = id => {
 let namesBusy = false;
 async function refreshNames() {
   if (!S.user || namesBusy) return;
-  const ids = members().filter(id => !id.startsWith('ej-'));
+  const ids = members().filter(id => id.startsWith('u_'));
   if (!ids.length) return;
   namesBusy = true;
   try {

@@ -163,7 +163,7 @@ async function processTexts(texts, imgs) {
   if (!S.imp.cuenta && rows.length) {
     const pistas = [...new Set(rows.map(x => x && x.emisor).filter(Boolean))].join(' ') + ' ' + texts.map(t => t.text.slice(0, 1500)).join(' ');
     const m = medioMatch(norm(pistas));
-    if (m) { S.imp.cuenta = m.n; detectada = m.n; }
+    if (m) { S.imp.cuenta = m.n; detectada = m.n; if (m.usa && personaOf(m.usa)) S.imp.quien = m.usa; }
   }
   addImportRows(rows, origen);
   S.imp.busy = false;
