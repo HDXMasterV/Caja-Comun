@@ -79,6 +79,14 @@ Para que las mejoras no rompan lo que ya funciona, sobre todo trabajando en la o
 
 - [ ] **Cuotas que vienen en meses futuros.** Al avanzar a diciembre (o a cualquier mes siguiente) deben aparecer las cuotas pendientes de ese mes: las de compras en cuotas de los estados de cuenta (ej. "cuota 3/6" → la 4/6 cae en el mes siguiente) y las de Deudas y cuotas, como pagos por venir en el Panel y en Movimientos.
 - [ ] **Sin división de gastos.** Victor y Carol funcionan como una sola cuenta: quitar "Entre nosotros" (quién le debe a quién), la marca "compartido", el reparto y el filtro "Compartidos". Mantener solo quién hizo cada gasto, como dato informativo.
+- [ ] **Diseño elegido para el Panel (maqueta aprobada 2026-11-25, pendiente de aplicar):** estilo Binance con la paleta Grafito y ámbar (claro y oscuro) y el menú lateral actual.
+  - Fuente IBM Plex Sans con números tabulares.
+  - Fila de 4 indicadores pegados ("Pueden gastar hoy" destacado en grafito con número ámbar; gastado, ingresos y % sin gastar), cada uno con su variación vs el mes anterior con signo y porcentaje (ej. "+12,40 % vs oct").
+  - Colores de variación: gasto que sube en rojo ladrillo (`--crit-ink`), que baja en verde oliva (`--good-ink`). En movimientos, cargos en rojo con "−" y abonos en verde con "+".
+  - Gráfico principal "Gasto diario" con Lightweight Charts: barras grises por día + línea ámbar del promedio de 7 días, cursor con fecha y montos, botones 1M / 3M / 6M.
+  - Tabla "Categorías": gastado, variación vs mes anterior y mini gráfico de 6 meses por categoría.
+  - Tabla compacta "Últimos movimientos" (día, comercio, monto con signo).
+  - Descartado: gráfico de velas del saldo.
 - [ ] **Tipografía al estilo Binance.** Binance usa su fuente propia (BinancePlex), que no se puede copiar a la app; la alternativa libre es **IBM Plex Sans**, en la que se basa, con números tabulares. Revisar también cómo muestran los símbolos (+/−, %, $) y los colores de subida/bajada.
 - [ ] **Gráficos al estilo Binance.** Usan gráficos de TradingView; la versión libre es **Lightweight Charts** (licencia Apache 2.0), que se puede cargar desde cdnjs. Evaluar usarla para la evolución de ingresos y gastos (línea o área con cursor y tooltip) en vez de los gráficos SVG hechos a mano.
 
