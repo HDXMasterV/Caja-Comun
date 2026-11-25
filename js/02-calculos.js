@@ -12,12 +12,17 @@ const st = ym => {
 };
 const recOccurs = (r, ym) => r.activo !== false && (!r.desde || ym >= r.desde) && (r.frec !== 'anual' || Number(ym.slice(5)) === Number(r.mesAnual || 1));
 const cuotaNum = (d, ym) => monthsDiff(d.primera, ym) + 1;
+// Un pago fijo cuenta como pagado si ya hay un movimiento importado o anotado del mismo comercio y monto parecido ese mes.
+function recPagadoPorMov(r, ym) {
+  const k = merchantKey(r.nombre); if (!k) return null;
+  return S.movs.find(m => m.tipo === r.tipo && !m.ref && m.fecha && m.fecha.startsWith(ym) && Math.abs(m.monto - r.monto) <= Math.max(100, r.monto * 0.1) && sameMerchant(merchantKey(m.comercio || m.desc), k)) || null;
+}
 function pendientes(ym) {
   const out = [];
   for (const r of S.recs) {
     if (r.tipo !== 'gasto' || !recOccurs(r, ym)) continue;
     const dia = Math.min(Number(r.dia) || 1, daysInMonth(ym)); const key = `r:${r.id}:${ym}`;
-    out.push({key, kind:'r', id:r.id, nombre:r.nombre, monto:r.monto, dia, fecha:`${ym}-${pad(dia)}`, cat:r.cat, paid:S.refs.has(key), auto:!!r.auto, sus:!!r.sus, src:r});
+    out.push({key, kind:'r', id:r.id, nombre:r.nombre, monto:r.monto, dia, fecha:`${ym}-${pad(dia)}`, cat:r.cat, paid:S.refs.has(key) || !!recPagadoPorMov(r, ym), auto:!!r.auto, sus:!!r.sus, src:r});
   }
   for (const d of S.deudas) {
     const k = cuotaNum(d, ym); if (k < 1 || k > d.total) continue;

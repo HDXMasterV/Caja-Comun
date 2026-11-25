@@ -169,7 +169,7 @@ async function autoRecs() {
     if (!r.auto || !recOccurs(r, ym)) continue;
     const dia = Math.min(Number(r.dia) || 1, daysInMonth(ym)); const fecha = `${ym}-${pad(dia)}`;
     if (fecha > today) continue;
-    const key = `r:${r.id}:${ym}`; if (S.refs.has(key)) continue;
+    const key = `r:${r.id}:${ym}`; if (S.refs.has(key) || recPagadoPorMov(r, ym)) continue;
     try {
       await S.db.doc(`movs/pago-r-${r.id}-${ym}`).set(movDoc({fecha, monto: r.monto, tipo: r.tipo, desc: r.nombre, comercio: r.nombre, cat: r.cat, cuenta: r.cuenta || '', quien: r.quien || '', comp: r.tipo === 'gasto' && !!r.comp, origen:'recurrente', ref: key, ...(r.ej ? {ej:true} : {})}));
     } catch (e) { if (e && e.code === 'invalid_argument') { S.ro = true; scheduleRender(); return; } }
