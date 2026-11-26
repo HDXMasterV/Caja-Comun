@@ -70,7 +70,10 @@ const DEF_RULES = [
   ['entel','telecom'],['movistar','telecom'],['wom','telecom'],['claro','telecom'],['vtr','telecom'],['gtd','telecom'],
   ['netflix','suscripciones'],['spotify','suscripciones'],['disney','suscripciones'],['hbo','suscripciones'],['prime video','suscripciones'],['youtube','suscripciones'],['apple com','suscripciones'],['icloud','suscripciones'],['paramount','suscripciones'],['crunchyroll','suscripciones'],['chatgpt','suscripciones'],['claude ai','suscripciones'],['anthropic','suscripciones'],
   ['cruz verde','salud'],['salcobrand','salud'],['ahumada','salud'],['dr simi','salud'],['isapre','salud'],['fonasa','salud'],['clinica','salud'],['integramedica','salud'],
-  ['falabella','ropa'],['paris','ropa'],['ripley','ropa'],['h&m','ropa'],['zara','ropa'],['preunic','ropa'],
+  // Tiendas por departamento (Ripley, Falabella, Paris) venden de todo: no tienen regla general, se decide por el producto.
+  ['h&m','ropa'],['zara','ropa'],['preunic','ropa'],['jean','ropa'],['zapatilla','ropa'],['calcetin','ropa'],['boxer','ropa'],['calzon','ropa'],['pantalon','ropa'],
+  ['sabana','hogar'],['almoh','hogar'],['freidora','hogar'],['pimer','hogar'],['extractor de jugo','hogar'],
+  ['cuota reprog','deudas'],['operacion revolving','deudas'],
   ['sodimac','hogar'],['easy','hogar'],['homecenter','hogar'],['ikea','hogar'],
   ['cinemark','entretencion'],['cineplanet','entretencion'],['steam','entretencion'],['playstation','entretencion'],['latam','entretencion'],['sky airline','entretencion'],['jetsmart','entretencion'],
   ['comision','comisiones'],['impuesto timbre','comisiones'],['interes','comisiones'],['mantencion','comisiones'],
